@@ -34,9 +34,7 @@ def lambda_handler(event, context):
 ```
 
 > [!TIP]
-> To do the rest of the steps automatically, see [this](.github/workflows/deploy.yaml) GitHub Action.
-
-> Use `gh secret set -f .env` to set all environment variables in your `.env` file as GitHub Actions secrets.
+> To do the rest of the steps automatically, see [this](.github/workflows/deploy.yaml) GitHub Action. Also, use `gh secret set -f .env` to set all environment variables in your `.env` file as GitHub Actions secrets.
 
 <details>
 <summary>Manual steps</summary>
