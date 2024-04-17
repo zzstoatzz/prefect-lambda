@@ -8,7 +8,7 @@ on:
 
 env:
   ECR_REPOSITORY: demo
-  LAMBDA_FUNCTION_NAME: demo-lambda
+  LAMBDA_FUNCTION_NAME: demo
   LAMBDA_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
 
 jobs:
