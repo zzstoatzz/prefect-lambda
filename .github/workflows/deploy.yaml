@@ -29,6 +29,10 @@ jobs:
               id: login-ecr
               uses: aws-actions/amazon-ecr-login@v2
 
+            - name: Create or Update ECR Repository
+              run: |
+                aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
+
             - name: Build, Tag, Push Docker Image
               env:
                 ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -40,10 +44,6 @@ jobs:
                 .
 
                 docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-
-            - name: Create or Update ECR Repository
-              run: |
-                aws ecr describe-repositories --repository-names $ECR_REPOSITORY || aws ecr create-repository --repository-name $ECR_REPOSITORY
         
             - name: Create or Update Lambda Function
               env:
