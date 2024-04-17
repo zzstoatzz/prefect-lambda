@@ -52,6 +52,8 @@ jobs:
                 PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
               run: |
                 aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME && \
+                aws lambda update-function-configuration \
+                  --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" && \
                 aws lambda update-function-code \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --image-uri $IMAGE_TAG:${{ github.sha }} || \
