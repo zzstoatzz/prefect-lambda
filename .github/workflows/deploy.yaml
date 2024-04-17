@@ -47,7 +47,7 @@ jobs:
         
             - name: Create or Update Lambda Function
               env:
-                IMAGE_TAG: ${{ steps.login-ecr.outputs.registry }}/$ECR_REPOSITORY
+                ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
                 PREFECT_API_KEY: ${{ secrets.PREFECT_API_KEY }}
                 PREFECT_API_URL: ${{ secrets.PREFECT_API_URL }}
               run: |
@@ -58,7 +58,7 @@ jobs:
                 aws lambda create-function \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --package-type Image \
-                  --code ImageUri=$IMAGE_TAG:latest \
+                  --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:lastest \
                   --role $LAMBDA_ROLE \
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" \
                   --timeout 30
