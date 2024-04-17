@@ -60,6 +60,5 @@ jobs:
                   --package-type Image \
                   --code ImageUri=$IMAGE_TAG:${{ github.sha }} \
                   --role $LAMBDA_ROLE \
-                  --timeout 60 \
-                  --memory-size 128
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}"
+                  --timeout 30
