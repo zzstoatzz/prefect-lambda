@@ -4,7 +4,6 @@
 - Ensure you have an AWS account
 
 ### Step 2: Create a Dockerfile
-- Create a new file named `Dockerfile` in your project directory.
 
 #### `Dockerfile`:
 ```Dockerfile
