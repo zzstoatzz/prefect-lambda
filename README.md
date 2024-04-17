@@ -34,6 +34,11 @@ def lambda_handler(event, context):
     return {"message": "Hello, World!"}
 ```
 
+!!! note
+    To do the rest of the steps automatically, see [this](.github/workflows/deploy.yaml) GitHub Action.
+
+    Pro tip: use `gh secret set -f .env` to set all environment variables in your `.env` file as GitHub Actions secrets.
+
 ### Step 4: Build the Docker image
 - Build the Docker image using the Dockerfile.
 ```
