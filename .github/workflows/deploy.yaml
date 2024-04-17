@@ -53,6 +53,7 @@ jobs:
               run: |
                 aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME && \
                 aws lambda update-function-configuration \
+                  --function-name $LAMBDA_FUNCTION_NAME \
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" && \
                 aws lambda update-function-code \
                   --function-name $LAMBDA_FUNCTION_NAME \
