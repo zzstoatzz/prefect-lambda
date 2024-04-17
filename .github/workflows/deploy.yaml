@@ -6,7 +6,6 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_TAG: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/demo
   LAMBDA_FUNCTION_NAME: demo
   LAMBDA_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
 
@@ -25,26 +24,30 @@ jobs:
                 aws-region: ${{ secrets.AWS_REGION }}
 
             - name: Login to ECR
-              run: |
-                aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.IMAGE_TAG }}
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
 
             - name: Build, Tag, Push Docker Image
+              env:
+                REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+                REPOSITORY: demo
+                IMAGE_TAG: ${{ github.sha }}
               run: |
                 docker build \
                 --platform linux/amd64 \
-                --tag ${{ env.IMAGE_TAG }}:${{ github.sha }} \
-                --tag ${{ env.IMAGE_TAG }}:latest \
+                --tag $REGISTRY/$REPOSITORY:$IMAGE_TAG \
+                --tag $REGISTRY/$REPOSITORY:latest \
                 .
-        
-                docker push ${{ env.IMAGE_TAG }}/demo:${{ github.sha }}
-                
-            
+
+                docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
             - name: Create or Update ECR Repository
               run: |
                 aws ecr describe-repositories --repository-names demo || aws ecr create-repository --repository-name demo
         
-
             - name: Create or Update Lambda Function
+              env:
+                IMAGE_TAG: ${{ steps.login-ecr.outputs.registry }}/demo
               run: |
                 aws lambda get-function --function-name ${{ env.LAMBDA_FUNCTION_NAME }} && \
                 aws lambda update-function-code \
