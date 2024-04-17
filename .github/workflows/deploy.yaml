@@ -55,7 +55,7 @@ jobs:
                 aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME && \
                 aws lambda update-function-configuration \
                   --function-name $LAMBDA_FUNCTION_NAME \
-                  --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" || \
+                  --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL,PREFECT_HOME=$PREFECT_HOME}" || \
                 aws lambda create-function \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --package-type Image \
