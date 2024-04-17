@@ -37,7 +37,10 @@ def lambda_handler(event, context):
 ### Step 4: Build the Docker image
 - Build the Docker image using the Dockerfile.
 ```
-docker build --platform linux/amd64 -t my-lambda-function .
+docker build \
+  --platform linux/amd64 \
+  --tag your-account-id.dkr.ecr.your-region.amazonaws.com/my-lambda-function:latest \
+  .
 ```
 
 ### Step 5: Create an Amazon ECR repository
@@ -52,19 +55,14 @@ aws ecr create-repository --repository-name my-lambda-function
 aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
 ```
 
-### Step 7: Tag the Docker image
-- Tag the Docker image with the Amazon ECR repository URI.
-```
-docker tag my-lambda-function:latest your-account-id.dkr.ecr.your-region.amazonaws.com/my-lambda-function:latest
-```
 
-### Step 8: Push the Docker image to Amazon ECR
+### Step 7: Push the Docker image to Amazon ECR
 - Push the tagged Docker image to your Amazon ECR repository.
 ```
 docker push your-account-id.dkr.ecr.your-region.amazonaws.com/my-lambda-function:latest
 ```
 
-### Step 9: Create the Lambda function
+### Step 8: Create the Lambda function
 - Create the Lambda function using the AWS CLI, specifying the function name, package type, code image URI, and IAM role.
 ```
 aws lambda create-function --function-name my-lambda-function \
@@ -73,21 +71,21 @@ aws lambda create-function --function-name my-lambda-function \
   --role arn:aws:iam::your-account-id:role/my-lambda-role
 ```
 
-### Step 10: Set environment variables for the Lambda function
+### Step 9: Set environment variables for the Lambda function
 - Set the environment variables for your Lambda function using the AWS CLI.
 ```
 aws lambda update-function-configuration --function-name my-lambda-function \
   --environment "Variables={ENV_VAR1=value1,ENV_VAR2=value2}"
 ```
 
-### Step 11: Test the Lambda function
+### Step 10: Test the Lambda function
 - Invoke the Lambda function to test its functionality.
 ```
 aws lambda invoke --function-name my-lambda-function response.json
 ```
 - Check the `response.json` file for the function's output.
 
-### Step 12: Update the Lambda function (if needed)
+### Step 11: Update the Lambda function (if needed)
 - If you make changes to your Lambda function code or environment variables, rebuild the Docker image, push it to Amazon ECR, and update the function using the AWS CLI.
 ```
 docker build -t my-lambda-function .

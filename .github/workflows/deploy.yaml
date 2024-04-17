@@ -7,6 +7,8 @@ on:
 
 env:
   IMAGE_TAG: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/demo
+  LAMBDA_FUNCTION_NAME: demo
+  LAMBDA_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
 
 jobs:
     deploy-to-lambda:
@@ -14,6 +16,13 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
+
+            - name: Configure AWS Credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws-region: ${{ secrets.AWS_REGION }}
 
             - name: Login to ECR
               run: |
@@ -30,13 +39,21 @@ jobs:
                 docker push ${{ env.IMAGE_TAG }}/demo:${{ github.sha }}
                 
             
-            - name: Create (if not exists) ECR Repository
+            - name: Create or Update ECR Repository
               run: |
-                    aws ecr describe-repositories --repository-names demo || aws ecr create-repository --repository-name demo
-            
+                aws ecr describe-repositories --repository-names demo || aws ecr create-repository --repository-name demo
+        
 
             - name: Create or Update Lambda Function
               run: |
+                aws lambda get-function --function-name ${{ env.LAMBDA_FUNCTION_NAME }} && \
                 aws lambda update-function-code \
-                --function-name demo --image-uri ${{ env.IMAGE_TAG }}/demo:${{ github.sha }} \
-                --region ${{ secrets.AWS_REGION }}
+                  --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+                  --image-uri ${{ env.IMAGE_TAG }}:${{ github.sha }} || \
+                aws lambda create-function \
+                  --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+                  --package-type Image \
+                  --code ImageUri=${{ env.IMAGE_TAG }}:${{ github.sha }} \
+                  --role ${{ env.LAMBDA_ROLE }} \
+                  --timeout 60 \
+                  --memory-size 128
