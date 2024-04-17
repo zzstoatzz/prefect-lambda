@@ -9,6 +9,4 @@ RUN uv pip install -r requirements.txt
 COPY .prefect/ ${LAMBDA_TASK_ROOT}/.prefect/
 COPY handlers.py ${LAMBDA_TASK_ROOT}
 
-ENV PREFECT_HOME=${LAMBDA_TASK_ROOT}
-
 CMD [ "handlers.lambda_handler" ]
