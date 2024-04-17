@@ -55,13 +55,10 @@ jobs:
                 aws lambda update-function-configuration \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" && \
-                aws lambda update-function-code \
-                  --function-name $LAMBDA_FUNCTION_NAME \
-                  --image-uri $IMAGE_TAG:${{ github.sha }} || \
                 aws lambda create-function \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --package-type Image \
-                  --code ImageUri=$IMAGE_TAG:${{ github.sha }} \
+                  --code ImageUri=$IMAGE_TAG:latest \
                   --role $LAMBDA_ROLE \
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" \
                   --timeout 30
