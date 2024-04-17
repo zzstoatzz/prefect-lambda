@@ -17,11 +17,11 @@ RUN uv venv
 RUN uv pip install -r requirements.txt
 
 COPY .prefect/ ${LAMBDA_TASK_ROOT}/.prefect/
-COPY entrypoint.py ${LAMBDA_TASK_ROOT}
+COPY handlers.py ${LAMBDA_TASK_ROOT}
 
-ENV PREFECT_HOME=${LAMBDA_TASK_ROOT}/.prefect
+ENV PREFECT_HOME=${LAMBDA_TASK_ROOT}
 
-CMD [ "entrypoint.lambda_handler" ]
+CMD [ "handlers.lambda_handler" ]
 ```
 
 > [!NOTE]
