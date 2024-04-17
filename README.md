@@ -5,19 +5,27 @@
 
 ### Step 2: Create a Dockerfile
 - Create a new file named `Dockerfile` in your project directory.
-- Example Dockerfile:
+
+#### `Dockerfile`:
 ```Dockerfile
 FROM public.ecr.aws/lambda/python:3.12
 
 COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
-RUN pip install -r requirements.txt
+RUN pip install uv
+RUN uv venv
+RUN uv pip install -r requirements.txt
 
 COPY .prefect/ ${LAMBDA_TASK_ROOT}/.prefect/
-COPY plugin.py ${LAMBDA_TASK_ROOT}
+COPY entrypoint.py ${LAMBDA_TASK_ROOT}
 
-CMD [ "plugin.lambda_handler" ]
+ENV PREFECT_HOME=${LAMBDA_TASK_ROOT}/.prefect
+
+CMD [ "entrypoint.lambda_handler" ]
 ```
+
+> [!NOTE]
+> What is `uv` you ask? [Change your life](https://github.com/astral-sh/uv?tab=readme-ov-file#getting-started) today.
 
 ### Step 3: Write your Lambda function code
 - Create a new file named `lambda_function.py` (or any desired name) and write your Lambda function code.
