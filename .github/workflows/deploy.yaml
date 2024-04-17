@@ -58,7 +58,7 @@ jobs:
                 aws lambda create-function \
                   --function-name $LAMBDA_FUNCTION_NAME \
                   --package-type Image \
-                  --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:lastest \
+                  --code ImageUri=$ECR_REGISTRY/$ECR_REPOSITORY:latest \
                   --role $LAMBDA_ROLE \
                   --environment Variables="{PREFECT_API_KEY=$PREFECT_API_KEY,PREFECT_API_URL=$PREFECT_API_URL}" \
                   --timeout 30
