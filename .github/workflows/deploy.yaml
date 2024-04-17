@@ -1,0 +1,42 @@
+name: Deploy to AWS Lambda
+
+on:
+  release:
+    types: [released, prereleased]
+  workflow_dispatch:
+
+env:
+  IMAGE_TAG: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/demo
+
+jobs:
+    deploy-to-lambda:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v2
+
+            - name: Login to ECR
+              run: |
+                aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.IMAGE_TAG }}
+
+            - name: Build, Tag, Push Docker Image
+              run: |
+                docker build \
+                --platform linux/amd64 \
+                --tag ${{ env.IMAGE_TAG }}:${{ github.sha }} \
+                --tag ${{ env.IMAGE_TAG }}:latest \
+                .
+        
+                docker push ${{ env.IMAGE_TAG }}/demo:${{ github.sha }}
+                
+            
+            - name: Create (if not exists) ECR Repository
+              run: |
+                    aws ecr describe-repositories --repository-names demo || aws ecr create-repository --repository-name demo
+            
+
+            - name: Create or Update Lambda Function
+              run: |
+                aws lambda update-function-code \
+                --function-name demo --image-uri ${{ env.IMAGE_TAG }}/demo:${{ github.sha }} \
+                --region ${{ secrets.AWS_REGION }}
